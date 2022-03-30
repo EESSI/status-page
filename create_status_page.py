@@ -67,12 +67,15 @@ def maintenance_class():
 
 
 servers = scrape(
-    servers = [
+    stratum0 = [
         "rug-nl.stratum0.cvmfs.eessi-infra.org",
+    ],    
+    stratum1 = [
         "aws-eu-west1.stratum1.cvmfs.eessi-infra.org",
         "azure-us-east1.stratum1.cvmfs.eessi-infra.org",
         "bgo-no.stratum1.cvmfs.eessi-infra.org",
         "rug-nl.stratum1.cvmfs.eessi-infra.org",
+        "broken.stratum1.cvmfs.eessi-infra.org",
     ],
     ignore_repos = [
         "bla.eessi-hpc.org",
@@ -85,6 +88,8 @@ servers = scrape(
 eessi_not_ok_events = []
 stratum1_not_ok_events = []
 repositories_not_ok_events = []
+
+stratum1_count = 0
 
 repo_rev_status = {}
 repo_snap_status = {}
@@ -139,13 +144,24 @@ for server in servers:
 
 for server in servers:
     if server.server_type == 1:
-        updates = ok_class()
+        stratum1_count = stratum1_count + 1
+        default_class = ok_class()
+        if server.is_down():
+            default_class = failed_class()
+            stratum1_not_ok_events.append(3)
+
+        updates = default_class
+
+        for repo in stratum0_repo_versions:
+            repo_rev_status[repo] = failed_class()
+            repo_snap_status[repo] = failed_class()
+            known_repos[repo] = 1
+
         for repo in server.repositories:
             # Pure initialization, we'll find problems later.
-            if not repo.name in known_repos:
-                repo_rev_status[repo.name] = ok_class()
-                repo_snap_status[repo.name] = ok_class()
-                known_repos[repo.name] = 1
+            repo_rev_status[repo.name] = default_class
+            repo_snap_status[repo.name] = default_class
+            known_repos[repo.name] = 1
 
             if repo.revision != stratum0_repo_versions[repo.name]:
                 updates = warning_class()
@@ -155,7 +171,7 @@ for server in servers:
 
                 rs = repo_rev_status[repo.name]
                 # Escalate, this is ugly, should keep track of all the issues and pick the worst.
-                if rs == ok_class() or rs == degraded_class():
+                if rs == ok_class() or rs == degraded_class() or rs == failed_class():
                     repo_rev_status[repo.name] = warning_class()
 
             if NOW - repo.last_snapshot > ACCEPTED_TIME_SINCE_SNAPSHOT_IN_SECONDS:
@@ -165,7 +181,7 @@ for server in servers:
 
         shortname = server.name.split('.')
 
-        geoapi_class = ok_class()
+        geoapi_class = default_class
         # 0 ok, 1 wrong answer, 2 failing, 9 unable to test
         if server.geoapi_status == 0:
             geoapi_class = ok_class()
@@ -197,6 +213,17 @@ for repo in known_repos:
 for repo in stratum0_repo_versions:
     shortname = repo.split('.')
     stratum0_details.append(shortname[0] + " : " + str(stratum0_repo_versions[repo]))
+
+
+if len(stratum1_not_ok_events) >= stratum1_count:
+    # More errors than nodes (errors are one per node)
+    stratum1_status_class = failed_class()
+elif len(stratum1_not_ok_events) >= stratum1_count - 2:
+    # We have at most two error free nodes
+    stratum1_status_class = warning_class()
+elif stratum1_not_ok_events:
+    stratum1_status_class = degraded_class()
+
 
 
 data = {
