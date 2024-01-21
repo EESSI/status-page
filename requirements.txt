@@ -1,2 +1,2 @@
-git+https://github.com/terjekv/cvmfs-server-scraper@main#egg=cvmfs-server-scraper
+cvmfs-server-scraper==0.0.3
 jinja2
