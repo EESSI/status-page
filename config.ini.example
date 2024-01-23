@@ -1,0 +1,15 @@
+[config]
+logging_level=WARN
+min_ok_stratum1=2
+
+[stratum0]
+rug-nl-s0.eessi.science
+
+[stratum1]
+aws-eu-central-s1.eessi.science
+azure-us-east-s1.eessi.science
+
+[repositories]
+
+[ignored_repositories]
+test.eessi.io

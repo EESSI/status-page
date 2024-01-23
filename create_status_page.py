@@ -43,6 +43,7 @@ def read_config(file_path: str) -> Dict[str, List[str]]:
         "repos": get_section_keys("repositories"),
         "ignore_repos": get_section_keys("ignored_repositories"),
         "logging_level": logging_level,
+        "min_ok_stratum1": config.getint("config", "min_ok_stratum1", fallback=2),
     }
 
     for section in CONFIG_SECTIONS_THAT_MUST_HAVE_VALUES:
@@ -278,7 +279,7 @@ for repo in stratum0_repo_versions:
 if len(stratum1_not_ok_events) >= stratum1_count:
     # More errors than nodes (errors are one per node)
     stratum1_status_class = failed_class()
-elif len(stratum1_not_ok_events) >= stratum1_count - 2:
+elif len(stratum1_not_ok_events) > stratum1_count - config["min_ok_stratum1"]:
     # We have at most two error free nodes
     stratum1_status_class = warning_class()
 elif stratum1_not_ok_events:
