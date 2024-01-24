@@ -1,6 +1,7 @@
 [config]
 logging_level=WARN
 min_ok_stratum1=2
+contact_email=support@eessi.io
 
 [stratum0]
 rug-nl-s0.eessi.science
