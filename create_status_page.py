@@ -44,6 +44,7 @@ def read_config(file_path: str) -> Dict[str, List[str]]:
         "ignore_repos": get_section_keys("ignored_repositories"),
         "logging_level": logging_level,
         "min_ok_stratum1": config.getint("config", "min_ok_stratum1", fallback=2),
+        "contact_email": config.get("config", "contact_email", fallback=""),
     }
 
     for section in CONFIG_SECTIONS_THAT_MUST_HAVE_VALUES:
@@ -298,6 +299,7 @@ data: Dict[str, Any] = {
     "repositories_status_class": repositories_status_class,
     "repositories": repositories,
     "last_update": datetime.now().replace(microsecond=0).isoformat(),
+    "contact_email": config["contact_email"],
 }
 
 output = template.render(data)
