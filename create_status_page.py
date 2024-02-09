@@ -3,7 +3,7 @@
 import configparser
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Union
 
 from cvmfsscraper import scrape, set_log_level
@@ -298,7 +298,7 @@ data: Dict[str, Any] = {
     "stratum1s": stratum1_servers,
     "repositories_status_class": repositories_status_class,
     "repositories": repositories,
-    "last_update": datetime.now().replace(microsecond=0).isoformat(),
+    "last_update": datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
     "contact_email": config["contact_email"],
 }
 
