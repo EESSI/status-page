@@ -45,6 +45,7 @@ def read_config(file_path: str) -> Dict[str, List[str]]:
         "logging_level": logging_level,
         "min_ok_stratum1": config.getint("config", "min_ok_stratum1", fallback=2),
         "contact_email": config.get("config", "contact_email", fallback=""),
+        "title": config.get("config", "title", fallback="EESSI :: Status"),
     }
 
     for section in CONFIG_SECTIONS_THAT_MUST_HAVE_VALUES:
@@ -298,8 +299,9 @@ data: Dict[str, Any] = {
     "stratum1s": stratum1_servers,
     "repositories_status_class": repositories_status_class,
     "repositories": repositories,
-    "last_update": datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S %Z'),
+    "last_update": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S %Z"),
     "contact_email": config["contact_email"],
+    "title": config["title"],
 }
 
 output = template.render(data)

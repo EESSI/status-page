@@ -1,4 +1,5 @@
 [config]
+title=EESSI status!
 logging_level=WARN
 min_ok_stratum1=2
 contact_email=support@eessi.io
