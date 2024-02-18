@@ -107,7 +107,11 @@
     </div>
 </div>
 
-<div class="footer">Last updated {{ last_update }} | {{ contact_email }}</div>
+<div class="footer">Last updated {{ last_update }}
+{% if repo_url -%}
+   | <a href="{{ repo_url }}">{{ repo_url_text }}</a>
+{% endif %}
+| {{ contact_email }}</div>
 
 </body>
 </html>

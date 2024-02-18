@@ -3,6 +3,8 @@ title=EESSI status!
 logging_level=WARN
 min_ok_stratum1=2
 contact_email=support@eessi.io
+repo_url=https://github.com/eessi
+repo_url_text=EESSI @ github
 
 [stratum0]
 rug-nl-s0.eessi.science
