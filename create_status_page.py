@@ -46,6 +46,10 @@ def read_config(file_path: str) -> Dict[str, List[str]]:
         "min_ok_stratum1": config.getint("config", "min_ok_stratum1", fallback=2),
         "contact_email": config.get("config", "contact_email", fallback=""),
         "title": config.get("config", "title", fallback="EESSI :: Status"),
+        "repo_url": config.get("config", "repo_url", fallback=""),
+        "repo_url_text": config.get(
+            "config", "repo_url_text", fallback="Repository documentation"
+        ),
     }
 
     for section in CONFIG_SECTIONS_THAT_MUST_HAVE_VALUES:
@@ -217,6 +221,15 @@ for server in servers:
             repo_snap_status[repo.name] = default_class
             known_repos[repo.name] = 1
 
+            if repo.name not in stratum0_repo_versions:
+                stratum0_name = config["stratum0_servers"][0]
+                # We did not get a repo from stratum0, this is bad.
+                repo_rev_status[repo.name] = warning_class()
+                eessi_status_text = "Stratum0 not responding!"
+                eessi_status_class = get_class("WARNING")
+                eessi_status_description = f"Due to stratum0 ({stratum0_name}) not responding, status for repositories and their versions cannot be validated."
+                continue
+
             if repo.revision != stratum0_repo_versions[repo.name]:
                 updates = warning_class()
                 eessi_not_ok_events.append(2)
@@ -302,6 +315,8 @@ data: Dict[str, Any] = {
     "last_update": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S %Z"),
     "contact_email": config["contact_email"],
     "title": config["title"],
+    "repo_url": config["repo_url"],
+    "repo_url_text": config["repo_url_text"],
 }
 
 output = template.render(data)
