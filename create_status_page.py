@@ -264,18 +264,16 @@ for server in servers:
         )
 
 for repo in known_repos:
-    shortname = repo.split(".")
     repositories.append(
         {
-            "name": shortname[0],
+            "name": repo,
             "revision_class": repo_rev_status[repo],
             "snapshot_class": repo_snap_status[repo],
         }
     )
 
 for repo in stratum0_repo_versions:
-    shortname = repo.split(".")
-    stratum0_details.append(shortname[0] + " : " + str(stratum0_repo_versions[repo]))
+    stratum0_details.append(repo + " : " + str(stratum0_repo_versions[repo]))
 
 
 if len(stratum1_not_ok_events) >= stratum1_count:
